@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <title>Calculator</title>
+</head>
+<body>
+    <div class="calculator_block">
+        <div class="container">
+            <div class="interface_block">
+                <div class="display_block">
+                    <div class="display">
+                        <h2 class="display-text"></h2>
+                    </div>
+                </div>
+                <div class="buttons_block">
+                    <div class="buttons-row">
+                        <button class="btn" id="x-pow-y" data-action="binary-action">x<sup>y</sup></button>
+                        <button class="btn" id="cos" data-action="unary-action">cos(x)</button>
+                        <button class="btn default_btn" id="clear">C</button>
+                        <button class="btn default_btn" id="delete">&larr; del</button>
+                        <button class="btn default_btn" id="sqrt" data-action="unary-action">&radic;</button>
+                        <button class="btn default_btn" id="division" data-action="binary-action">/</button>
+                    </div>
+                    <div class="buttons-row">
+                        <button class="btn" id="x-pow-2" data-action="unary-action">x<sup>2</sup></button>
+                        <button class="btn" id="sin" data-action="unary-action">sin(x)</button>
+                        <button class="btn num" id="num-7">7</button>
+                        <button class="btn num" id="num-8">8</button>
+                        <button class="btn num" id="num-9">9</button>
+                        <button class="btn default_btn" id="miltiplying" data-action="binary-action">*</button>
+                    </div>
+                    <div class="buttons-row">
+                        <button class="btn" id="right-bracket">)</button>
+                        <button class="btn" id="tg" data-action="unary-action">tg(x)</button>
+                        <button class="btn num" id="num-4">4</button>
+                        <button class="btn num" id="num-5">5</button>
+                        <button class="btn num" id="num-6">6</button>
+                        <button class="btn default_btn" id="substraction" data-action="binary-action">-</button>
+                    </div>
+                    <div class="buttons-row">
+                        <button class="btn" id="left-bracket">(</button>
+                        <button class="btn" id="ctg" data-action="unary-action">ctg(x)</button>
+                        <button class="btn num" id="num-1">1</button>
+                        <button class="btn num" id="num-2">2</button>
+                        <button class="btn num" id="num-3">3</button>
+                        <button class="btn default_btn" id="adding" data-action="binary-action">+</button>
+                    </div>
+                    <div class="buttons-row">
+                        <button class="btn const-num" id="eps">e</button>
+                        <button class="btn const-num" id="pi">&pi;</button>
+                        <button class="btn num" id="num-0">0</button>
+                        <button class="btn default_btn" id="dott">.</button>
+                        <button class="btn default_btn" id="percent" data-action="binary-action">%</button>
+                        <button class="btn default_btn" id="equal">=</button>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>

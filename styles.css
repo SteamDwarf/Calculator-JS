@@ -1,0 +1,122 @@
+*, *:after, *:before { box-sizing: border-box; }
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp,small, strike, strong, sub, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1.2;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+} 
+ol { 
+	list-style: decimal;
+}
+ul {
+	padding-left: 1.4em;
+	list-style: square;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+/*///////////////REFRESH END////////////////////////
+//////////////////////////////////////////////////*/
+body {
+    font-size: 1.2em;
+    font-family: 'Roboto', sans-serif;
+}
+h2 {
+    font-size: 170%;
+    font-weight: 300;
+}
+sup {
+    font-size: 70%;
+}
+.calculator_block {
+    display: flex;
+	justify-content: center;
+	margin: 100px auto;
+    width: 500px;
+    height: 500px;
+    /* border: 3px solid #42aaff; */
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+.container {
+    width: 100%;
+    padding: 10px;
+}
+.interface_block {
+    height: 100%;
+}
+.display_block {
+    height: 70px;
+    box-shadow: 0 0 5px 5px rgba(168,216,255,0.4) inset;
+}
+.display {
+    padding: 5px;
+    height: 100%;
+}
+.display-text {
+    width: 100%;
+    height: 100%;
+    text-align: right;
+    padding-top: 2%;
+    overflow: hidden;
+}
+.buttons_block {
+    display: flex;
+    flex-direction: column;
+    height: 86%;
+    margin-top: 5px;
+}
+.buttons-row {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin: 5px 0;
+    height: 20%;
+}
+.btn {
+    width: 15.9%;
+    height: 100%;
+    font-size: 100%;
+    border: 2px solid #75c1ff;
+    border-radius: 5px;
+    outline: none;
+    transition: background-color 0.2s;
+    background-color: #fff;
+	border-bottom: 5px solid #75c1ff;
+}
+.btn:hover {
+    background-color: #75c1ff;
+}
+.num {
+    border: 2px solid #138808;
+    border-bottom: 5px solid #138808;
+}
+.num:hover {
+    background-color: #138808;
+}
+.default_btn {
+    border: 2px solid #ffb300;
+    border-bottom: 5px solid #ffb300;
+}
+.default_btn:hover {
+    background-color: #ffb300;
+}

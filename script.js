@@ -11,9 +11,12 @@ document.addEventListener("DOMContentLoaded", () => {
           btnDelete = document.querySelector('#delete'),
           btnBinaryActions = document.querySelectorAll('[data-action="binary-action"]'),
           btnUnaryActions = document.querySelectorAll('[data-action="unary-action"]'),
-          btnEqual = document.querySelector('#equal');     
+          btnEqual = document.querySelector('#equal'),
+          btnParenthesises = document.querySelectorAll('.parenthesis'); 
 
-    let a = '', b = '', c = 0, symb = '', unaryOperator = '';
+    let a = '', b = '', c = 0, d = '', 
+        symb = '', unaryOperator = '', reserveOperator = '',
+        isParenthesisOpen = false;
 
     /*Данный метод принимает в качестве параметра событие.
       Вставляет текст цели события в элемент div display и присваивает его одной из переменных*/
@@ -23,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         /*Если id цели события pi или eps, то преобразует переменную num в цисло-константу*/
         if(e.target.id === 'pi') {
             num = Math.PI;
-        } else if(e.target.id === 'eps') {
+        } else if(e.target.id === 'eiler') {
             num = Math.E;
         }
         
@@ -68,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if(operator.id === 'x-pow-y') {
-            operatorSymb = 'x^y';
+            operatorSymb = '^';
         }
 
         /*Если в переменной symb уже есть оператор, то сперва выполнится арифметическое действие 
@@ -137,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
             case '/': c = a / b;
                 break;
-            case 'x^y': c = Math.pow(a, b);
+            case '^': c = Math.pow(a, b);
                 break;
             /* case '%': c = a % b;
                 break; */
@@ -185,6 +188,25 @@ document.addEventListener("DOMContentLoaded", () => {
         displayText.textContent = c;
     }
 
+    function parenthesisSet() {
+        if(isParenthesisOpen) {
+            d = a;
+            reserveOperator = symb;
+            a = '';
+            symb = '';
+            console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);
+        } else if(!isParenthesisOpen) {
+            countBinaryFunc();
+            console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);
+            b = c;
+            a = d;
+            symb = reserveOperator;
+            console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);
+            
+            
+        }
+    }
+
 
     btnNums.forEach(numBtn => {
         numBtn.addEventListener('click', (e) => {
@@ -210,6 +232,18 @@ document.addEventListener("DOMContentLoaded", () => {
         action.addEventListener('click', e => {
             let operator = e.target;
             setUnaryOperator(operator);
+        });
+    });
+
+    btnParenthesises.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if(e.target.id === 'open-parenthesis') {
+                isParenthesisOpen = true;
+            } else {
+                isParenthesisOpen = false;
+            }
+            displayText.textContent += e.target.innerText;
+            parenthesisSet();
         });
     });
 

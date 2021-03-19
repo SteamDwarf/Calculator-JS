@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
           btnEqual = document.querySelector('#equal'),
           btnParenthesises = document.querySelectorAll('.parenthesis'); 
 
-    let a = '', b = '', c = 0, d = '', 
+    let a = '', b = '', c = 0, d = '', x = '',
         symb = '', unaryOperator = '', reserveOperator = '',
         isParenthesisOpen = false;
 
@@ -89,13 +89,35 @@ document.addEventListener("DOMContentLoaded", () => {
         let text = displayText.textContent,
             textLength = text.length;
 
-        if(operator.id === 'x-pow-2') {
-            unaryOperator = 'xPow2';
-        } else if(operator.id === 'sqrt') {
-            unaryOperator = 'sqrt';
+        if(symb) {
+            x = b;
         } else {
-            unaryOperator = operator.innerText;
+            x = a;
         }
+    
+        switch(operator.id) {
+            case 'x-pow-2':
+                unaryOperator = `${x}^2`;
+                break;
+            case 'sin':
+                unaryOperator = `sin(${x})`;
+                break;
+            case 'cos':
+                unaryOperator = `cos(${x})`;
+                break;
+            case 'tg':
+                unaryOperator = `tg(${x})`;
+                break;
+            case 'ctg':
+                unaryOperator = `ctg(${x})`;
+                break;
+            case 'sqrt':
+                unaryOperator = `sqrt(${x})`;
+                break;
+        }
+        
+        displayText.textContent =  displayText.textContent.slice(0, displayText.textContent.search(x));
+        displayText.textContent += unaryOperator;
 
         if(displayText.textContent[textLength - 1] === symb) {
             symb = '';
@@ -142,8 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
             case '^': c = Math.pow(a, b);
                 break;
-            /* case '%': c = a % b;
-                break; */
+            case '%': c = a % b;
+                break;
         }
         
         a = c + '';
@@ -159,25 +181,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         switch(unaryOperator) {
-            case 'sin(x)': c = Math.sin(operand  * (Math.PI / 180));
+            case `sin(${x})`: 
+                c = Math.sin(operand  * (Math.PI / 180));
                 break;
-            case 'cos(x)': c = Math.cos(operand  * (Math.PI / 180));
+            case `cos(${x})`: 
+                c = Math.cos(operand  * (Math.PI / 180));
                 break;
-            case 'tg(x)': c = Math.tan(operand  * (Math.PI / 180));
+            case `tg(${x})`: 
+                c = Math.tan(operand  * (Math.PI / 180));
                 break;
-            case 'ctg(x)': c = 1 / (Math.tan(operand  * (Math.PI / 180)));
+            case `ctg(${x})`: 
+                c = 1 / (Math.tan(operand  * (Math.PI / 180)));
                 break;
-            case 'sqrt': c = Math.sqrt(operand);
+            case `sqrt(${x})`: 
+                c = Math.sqrt(operand);
                 break;
-            case 'xPow2': c = Math.pow(operand, 2); 
-            
+            case `${x}^2`: 
+                c = Math.pow(operand, 2); 
+                break;
         }
         
         if(symb) {
             b = c + '';
-        } else {
+        } else if(!isParenthesisOpen) {
             a = c + '';
             displayNum();
+        } else {
+            a = c + '';
         }
 
         unaryOperator = '';
@@ -259,8 +289,12 @@ document.addEventListener("DOMContentLoaded", () => {
         displayText.textContent = '';
         a = ''; 
         b = ''; 
-        c = ''; 
+        c = '';
         symb = '';
+        d = ''; 
+        unaryOperator = ''; 
+        reserveOperator = '';
+        isParenthesisOpen = false;
     });
 
     btnEqual.addEventListener('click', () => {

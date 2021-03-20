@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
           btnBinaryActions = document.querySelectorAll('[data-action="binary-action"]'),
           btnUnaryActions = document.querySelectorAll('[data-action="unary-action"]'),
           btnEqual = document.querySelector('#equal'),
-          btnParenthesises = document.querySelectorAll('.parenthesis'); 
+          btnParenthesis = document.querySelector('.parenthesis'); 
 
     let a = '', b = '', c = 0, d = '', x = '',
         symb = '', unaryOperator = '', reserveOperator = '',
@@ -43,20 +43,31 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(a, b, symb);
     }
 
+
+
+//TODO Убрать возможность удаления закрывющей скобки, и после установки закрывающей скобки не производился сразу подсчет между a и b
     function deleteLastSymb() {
         let text = displayText.textContent;
 
-        if(symb) {
-            if(text[text.length - 1] === '+') {
-                symb = '';
-            } else {
-                b = b.slice(0, -1);
-            }
-        } else {
-            a = a.slice(0, -1);
-        }
 
-        displayText.textContent = text.slice(0, -1);
+        if(text[text.length - 1 ] === '(') {
+            isParenthesisOpen = false;
+            displayText.textContent = text.slice(0, -1);
+        }else if(text[text.length - 1 ] !== ')') {
+            if(symb && text[text.length - 1 ] !== symb) {
+                b = b.slice(0, -1);
+                displayText.textContent = text.slice(0, -1);
+            } else  if(symb && text[text.length - 1 ] === symb) {
+                symb = '';
+                displayText.textContent = text.slice(0, -1);
+            } else if(!symb && c === 0) {
+                a = a.slice(0, -1);
+                displayText.textContent = text.slice(0, -1);
+            }
+        }
+        
+        
+        console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);
     }
 
     /*Метод, который настраивает работу стандартных операторов*/
@@ -114,6 +125,9 @@ document.addEventListener("DOMContentLoaded", () => {
             case 'sqrt':
                 unaryOperator = `sqrt(${x})`;
                 break;
+            case 'factorial':
+                unaryOperator = `${x}!`;
+                break;
         }
         
         displayText.textContent =  displayText.textContent.slice(0, displayText.textContent.search(x));
@@ -147,6 +161,32 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function getFactorial() {
+        let fact = 1;
+        for(let i = 1; i <= x; i++) {
+            fact *= i;
+        }
+        return fact;
+    }
+
+    function setPowY() {
+        if(a && b) {
+            d = a;
+            a = b;
+            b = '';
+            reserveOperator = symb;
+            symb = '^';
+            displayText.textContent += symb;
+            /* b = Math.pow(a, b);
+            a = d;
+            symb = reserveOperator;
+            countBinaryFunc(); */
+        }else {
+            symb = '^';
+            displayText.textContent += symb;
+        }
+    }
+
     /*Данная функция, в зависимости от значения переменной symb, определяет какое действие 
       будет выполняться с операндами*/
     function countBinaryFunc() {
@@ -167,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
             case '%': c = a % b;
                 break;
         }
-        
+
         a = c + '';
         b = '';
         symb = '';
@@ -199,6 +239,9 @@ document.addEventListener("DOMContentLoaded", () => {
             case `${x}^2`: 
                 c = Math.pow(operand, 2); 
                 break;
+            case `${x}!`: 
+                c = getFactorial(); 
+                break;
         }
         
         if(symb) {
@@ -206,6 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if(!isParenthesisOpen) {
             a = c + '';
             displayNum();
+            c = 0;
         } else {
             a = c + '';
         }
@@ -228,13 +272,21 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if(!isParenthesisOpen) {
             countBinaryFunc();
             console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);
-            b = c;
-            a = d;
-            symb = reserveOperator;
-            console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);
-            
-            
+            if(d) {
+                b = c;
+                a = d;
+                symb = reserveOperator;
+                c = 0;
+            }
+            console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);  
         }
+    }
+
+    function equal() {
+        countBinaryFunc();
+        displayNum();
+        symb = '';
+        c = 0;
     }
 
 
@@ -258,6 +310,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+/*     btnPowY.addEventListener('click', () => {
+        setPowY();
+    }); */
+
     btnUnaryActions.forEach(action => {
         action.addEventListener('click', e => {
             let operator = e.target;
@@ -265,7 +321,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    btnParenthesises.forEach(btn => {
+    btnParenthesis.addEventListener('click', () => {
+        if(isParenthesisOpen) {
+            isParenthesisOpen = false;
+            displayText.textContent += ')';
+        } else {
+            isParenthesisOpen = true;
+            displayText.textContent += '(';
+        }
+        parenthesisSet();
+    });
+    /* btnParenthesises.forEach(btn => {
         btn.addEventListener('click', (e) => {
             if(e.target.id === 'open-parenthesis') {
                 isParenthesisOpen = true;
@@ -275,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
             displayText.textContent += e.target.innerText;
             parenthesisSet();
         });
-    });
+    }); */
 
     btnDott.addEventListener('click', () => {
         setDott();
@@ -289,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
         displayText.textContent = '';
         a = ''; 
         b = ''; 
-        c = '';
+        c = 0;
         symb = '';
         d = ''; 
         unaryOperator = ''; 
@@ -301,5 +367,6 @@ document.addEventListener("DOMContentLoaded", () => {
         countBinaryFunc();
         displayNum();
         symb = '';
+        c = 0;
     });
 });

@@ -18,15 +18,35 @@ document.addEventListener("DOMContentLoaded", () => {
         binaryOperator = '', unaryOperator = '', 
         reserveOperator = '', reserveOperator2 = '', reserveOperatorUnary = '';
 
-        //isParenthesisOpen = false;
+      function displayNum() {
+        displayText.textContent = c;
+    }
 
-    /*Данный метод принимает в качестве параметра событие.
-      Вставляет текст цели события в элемент div display и присваивает его одной из переменных*/
+    function refresh() {
+        displayText.textContent = '';
+        a = ''; b = ''; c = 0; d = ''; x = ''; r ='';
+        binaryOperator = ''; unaryOperator = ''; 
+        reserveOperator = ''; reserveOperator2 = ''; reserveOperatorUnary = '';
+    }
+
+     function deleteLastSymb() {
+        let text = displayText.textContent;
+        if(binaryOperator) {
+            displayText.textContent = text.slice(0, -1);
+            if(text[text.length - 1 ] === binaryOperator) {
+                binaryOperator = '';
+            } else {
+                b = b.slice(0, -1);
+            }
+        } else if(a){
+            a = a.slice(0, -1);
+            displayText.textContent = text.slice(0, -1);
+        }
+        //console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${binaryOperator}, reserveOperator: ${reserveOperator}`);
+    }
 
     function setValue(e) {
         let num = e.target.innerText;
-
-        /*Если id цели события pi или eps, то преобразует переменную num в цисло-константу*/
 
         displayText.textContent += num;
 
@@ -36,24 +56,33 @@ document.addEventListener("DOMContentLoaded", () => {
             num = Math.E;
         }
             
-        /*В зависимости от того есть ли в переменной symb какое либо значение, определяет какой из переменной 
-          присвоить значение num*/
         if(binaryOperator) {
             b += num; 
         } else {
             a += num;
         }
-
-        console.log(a, b, binaryOperator);
     }
 
-    /*Метод, который настраивает работу стандартных операторов*/
+    function setDott() {
+        let text = displayText.textContent,
+            reg = new RegExp(/[-/%.^+]$/);
+
+        if(!text.match(reg)) {
+            if(binaryOperator && !b.includes('.')) {
+                b += '.'; 
+                displayText.textContent += '.';
+            } else if(!a.includes('.')) {
+                a += '.';
+                displayText.textContent += '.';
+            }
+        }
+    }
+
     function setBinaryOperator(operator) {
         let text = displayText.textContent,
             textLength = text.length,
             operatorSymb = operator.innerText;
 
-        //Если при вводе нового оператаора в переменной symb уже есть оператор, то в display он удаляется
         if(displayText.textContent[textLength - 1] === binaryOperator) {
             displayText.textContent = text.slice(0, -1);
         }
@@ -61,9 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(operator.id === 'x-pow-y') {
             operatorSymb = '^';
         }
-
-        /*Если в переменной symb уже есть оператор, то сперва выполнится арифметическое действие 
-          с уже имеющимся оператором, а только потом в переменную symb присвоится новый оператор*/
 
         if(binaryOperator) {
             if(operatorSymb === '^') {
@@ -91,13 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         displayText.textContent += operatorSymb;
-       /*  if(symb) {
-            countBinaryFunc();
-            symb = operatorSymb;
-        } else {
-            symb = operatorSymb;
-        }
-         */
     }
 
     function countBinaryFunc() {
@@ -129,14 +148,10 @@ document.addEventListener("DOMContentLoaded", () => {
             reserveOperator = reserveOperator2;
             countBinaryFunc();
         }
-
         b = '';
         d = '';
         r = '';
         displayNum();
-        /* a = c + '';
-        b = '';
-        symb = ''; */
     }
 
     function equal() {
@@ -144,8 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
         displayNum();
         c = 0;
     }
-
-//TODO Разобраться с возаимным отображением унарных операторов
 
     function setUnaryOperator(operator) {
         let text = displayText.textContent,
@@ -201,15 +214,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         countUnaryFunc();
-
-        /* if(binaryOperator) {
-            countUnaryFunc();
-            countBinaryFunc();
-            displayNum();
-        } else {
-            countUnaryFunc();
-            console.log(a, b, c, symb, unaryOperator);
-        } */
     } 
 
     function countUnaryFunc() {
@@ -253,72 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             b = c;
         }
-        //unaryOperator = '';
-        /* if(symb) {
-            b = c + '';
-        } else if(!isParenthesisOpen) {
-            a = c + '';
-            displayNum();
-            c = 0;
-        } else {
-            a = c + '';
-        } */
     } 
-
-    function refresh() {
-        displayText.textContent = '';
-        a = ''; b = ''; c = 0; d = ''; x = ''; r ='';
-        binaryOperator = ''; unaryOperator = ''; 
-        reserveOperator = ''; reserveOperator2 = ''; reserveOperatorUnary = '';
-        console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, r: ${r}, symb: ${binaryOperator}, reserveOperator: ${reserveOperator}`);
-    }
-
-     function deleteLastSymb() {
-        let text = displayText.textContent;
-        console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${binaryOperator}, reserveOperator: ${reserveOperator}`);
-        if(binaryOperator) {
-            displayText.textContent = text.slice(0, -1);
-            if(text[text.length - 1 ] === binaryOperator) {
-                binaryOperator = '';
-            } else {
-                b = b.slice(0, -1);
-            }
-        } else if(a){
-            a = a.slice(0, -1);
-            displayText.textContent = text.slice(0, -1);
-        }
-        /* if(text[text.length - 1 ] === '(') {
-            isParenthesisOpen = false;
-            displayText.textContent = text.slice(0, -1);
-        }else if(text[text.length - 1 ] !== ')') {
-            if(symb && text[text.length - 1 ] !== symb) {
-                b = b.slice(0, -1);
-                displayText.textContent = text.slice(0, -1);
-            } else  if(symb && text[text.length - 1 ] === symb) {
-                symb = '';
-                displayText.textContent = text.slice(0, -1);
-            } else if(!symb && c === 0) {
-                a = a.slice(0, -1);
-                displayText.textContent = text.slice(0, -1);
-            }
-        } */
-        console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${binaryOperator}, reserveOperator: ${reserveOperator}`);
-    }
-
-    function setDott() {
-        let text = displayText.textContent,
-            reg = new RegExp(/[-/%.^+]$/);
-
-        if(!text.match(reg)) {
-            if(binaryOperator && !b.includes('.')) {
-                b += '.'; 
-                displayText.textContent += '.';
-            } else if(!a.includes('.')) {
-                a += '.';
-                displayText.textContent += '.';
-            }
-        }
-    }
 
     function getFactorial() {
         let fact = 1;
@@ -328,50 +267,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return fact;
     }
 
-
-    /*Данная функция, в зависимости от значения переменной symb, определяет какое действие 
-      будет выполняться с операндами*/
-    
-
-    
-
-    function displayNum() {
-        displayText.textContent = c;
-    }
-
-    /* function parenthesisSet() {
-        if(isParenthesisOpen) {
-            d = a;
-            reserveOperator = symb;
-            a = '';
-            symb = '';
-            console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);
-        } else if(!isParenthesisOpen) {
-            countBinaryFunc();
-            console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);
-            if(d) {
-                b = c;
-                a = d;
-                symb = reserveOperator;
-                c = 0;
-            }
-            console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${symb}, reserveOperator: ${reserveOperator}`);  
-        }
-    } */
-
-
     btnNums.forEach(numBtn => {
         numBtn.addEventListener('click', (e) => {
             setValue(e);
         });
     });
-
     btnConstNums.forEach(numBtn => {
         numBtn.addEventListener('click', (e) => {
             setValue(e);
         });
     });
-
     btnBinaryActions.forEach(action => {
         action.addEventListener('click', e => {
             let operator = e.target;
@@ -379,7 +284,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         });
     });
-
     btnUnaryActions.forEach(action => {
         action.addEventListener('click', e => {
             let operator = e.target;
@@ -387,40 +291,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-/*     btnParenthesis.addEventListener('click', () => {
-        if(isParenthesisOpen) {
-            isParenthesisOpen = false;
-            displayText.textContent += ')';
-        } else {
-            isParenthesisOpen = true;
-            displayText.textContent += '(';
-        }
-        parenthesisSet();
-    }); */
-    /* btnParenthesises.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            if(e.target.id === 'open-parenthesis') {
-                isParenthesisOpen = true;
-            } else {
-                isParenthesisOpen = false;
-            }
-            displayText.textContent += e.target.innerText;
-            parenthesisSet();
-        });
-    }); */
-
     btnDott.addEventListener('click', () => {
         setDott();
     });
-
     btnDelete.addEventListener('click', () => {
         deleteLastSymb();
     });
-
     btnClear.addEventListener('click', () => {
         refresh();
     });
-
     btnEqual.addEventListener('click', () => {
         equal();
     });

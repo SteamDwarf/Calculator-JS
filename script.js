@@ -158,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
         countBinaryFunc();
         displayNum();
         c = 0;
+        binaryOperator = '';
     }
 
     function setUnaryOperator(operator) {

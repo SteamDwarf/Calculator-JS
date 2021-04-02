@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let text = displayText.textContent,
             reg = new RegExp(/[-/%.^+]$/);
 
-        if(!text.match(reg)) {
+        if(!text.match(reg) && text !== '') {
             if(binaryOperator && !b.includes('.')) {
                 b += '.'; 
                 displayText.textContent += '.';

@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
           btnNums = document.querySelectorAll('.num'),
           btnConstNums = document.querySelectorAll('.const-num'),
           btnDott = document.querySelector('#dott'),
-          btnPowY = document.querySelector('#x-pow-y'),
+          btnAll = document.querySelectorAll('.btn'),
           btnClear = document.querySelector('#clear'),
           btnDelete = document.querySelector('#delete'),
           btnBinaryActions = document.querySelectorAll('[data-action="binary-action"]'),
@@ -47,16 +47,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setValue(e) {
         let num = e.target.innerText;
+        let regConst = new RegExp(/[\deπ)!]$/);
+        let regSimpleNum = new RegExp(/[)πe]$/);
 
-        displayText.textContent += num;
+        if(e.target.id === 'pi' || e.target.id === 'eiler') {
+            if(!regConst.test(displayText.textContent)) {
+                displayText.textContent += num;
 
-        if(e.target.id === 'pi') {
-            num = Math.PI;
-        } else if(e.target.id === 'eiler') {
-            num = Math.E;
-        }
-            
-        if(binaryOperator) {
+                if(e.target.id === 'pi') {
+                    num = Math.PI;
+                } else if(e.target.id === 'eiler') {
+                    num = Math.E;
+                }
+            } else {
+                num = '';
+            }
+        } else {
+            if(!regSimpleNum.test(displayText.textContent)){
+                displayText.textContent += num;       
+            } else {
+                num = '';
+            }      
+        } 
+
+        if(binaryOperator && displayText.textContent.length > 1) {
             b += num; 
         } else {
             a += num;
@@ -83,40 +97,51 @@ document.addEventListener("DOMContentLoaded", () => {
             textLength = text.length,
             operatorSymb = operator.innerText;
 
-        if(displayText.textContent[textLength - 1] === binaryOperator) {
-            displayText.textContent = text.slice(0, -1);
-        }
-
-        if(operator.id === 'x-pow-y') {
-            operatorSymb = '^';
-        }
-
-        if(binaryOperator) {
-            if(operatorSymb === '^') {
-                if(d) {
-                    r = d;
-                    reserveOperator2 = reserveOperator;
-                }
-                d = a;
-                a = b;
-                b = '';
-                reserveOperator = binaryOperator;
-                binaryOperator = operatorSymb;
-            } else if(operatorSymb.match(/[*/%]/) && !binaryOperator.match(/[*/%]/)) {
-                d = a;
-                a = b;
-                b = '';
-                reserveOperator = binaryOperator;
-                binaryOperator = operatorSymb;
-            } else {
-                countBinaryFunc();
-                binaryOperator = operatorSymb;
+        if(displayText.textContent[textLength - 1] !== '.') {
+            if(displayText.textContent[textLength - 1] === binaryOperator) {
+                displayText.textContent = text.slice(0, -1);
+                binaryOperator = '';
             }
-        } else {
-            binaryOperator = operatorSymb;
-        }
-
-        displayText.textContent += operatorSymb;
+    
+            if(operator.id === 'x-pow-y') {
+                operatorSymb = '^';
+            }
+    
+            if(binaryOperator) {
+                if(operatorSymb === '^') {
+                    if(d) {
+                        r = d;
+                        reserveOperator2 = reserveOperator;
+                    }
+                    d = a;
+                    a = b;
+                    b = '';
+                    reserveOperator = binaryOperator;
+                    binaryOperator = operatorSymb;
+                } else if(operatorSymb.match(/[*/%]/) && !binaryOperator.match(/[*/%]/)) {
+                    d = a;
+                    a = b;
+                    b = '';
+                    reserveOperator = binaryOperator;
+                    binaryOperator = operatorSymb;
+                } else {
+                    countBinaryFunc();
+                    binaryOperator = operatorSymb;
+                }
+            } else {
+                if(displayText.textContent.length === 0 && (operatorSymb === '+' || operatorSymb === '-')) {
+                    a += operatorSymb;
+                } else {
+                    if(displayText.textContent.length === 0) {
+                        a = 0;
+                        displayText.textContent += a;
+                    }
+                    binaryOperator = operatorSymb;
+                }
+            }
+    
+            displayText.textContent += operatorSymb;
+        }  
     }
 
     function countBinaryFunc() {
@@ -152,6 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         d = '';
         r = '';
         displayNum();
+        unaryOperator = '';
     }
 
     function equal() {
@@ -159,97 +185,104 @@ document.addEventListener("DOMContentLoaded", () => {
         displayNum();
         c = 0;
         binaryOperator = '';
+        unaryOperator = '';
     }
 
     function setUnaryOperator(operator) {
         let text = displayText.textContent,
             textLength = text.length;
 
-        if(binaryOperator) {
-            x = b;
-        } else {
-            x = a;
-        }
-    
-        if(unaryOperator) {
-            reserveOperatorUnary = unaryOperator;
-        }
-
-        switch(operator.id) {
-            case 'x-pow-2':
-                unaryOperator = `${x}^2`;
-                break;
-            case 'sin':
-                unaryOperator = `sin(${x})`;
-                break;
-            case 'cos':
-                unaryOperator = `cos(${x})`;
-                break;
-            case 'tg':
-                unaryOperator = `tg(${x})`;
-                break;
-            case 'ctg':
-                unaryOperator = `ctg(${x})`;
-                break;
-            case 'sqrt':
-                unaryOperator = `sqrt(${x})`;
-                break;
-            case 'factorial':
-                unaryOperator = `${x}!`;
-                break;
-            case 'natural-logarithm':
-                unaryOperator = `ln(${x})`;
-                break;
-        }
+        if (displayText.textContent[textLength - 1] !== '.') {
+            if(a === '' && b === '') {
+                x = 0;
+            } else if(b) {
+                x = b;
+            } else {
+                x = a;
+            }
         
-        if(reserveOperatorUnary) {
-            displayText.textContent = displayText.textContent.slice(0,displayText.textContent.indexOf(reserveOperatorUnary, 0));
-            reserveOperatorUnary = '';
-        } else {
-            displayText.textContent =  displayText.textContent.slice(0, displayText.textContent.search(x));
-        }
-        displayText.textContent += unaryOperator;
-
-        if(displayText.textContent[textLength - 1] === binaryOperator) {
-            binaryOperator = '';
-        }
-
-        countUnaryFunc();
+            if(unaryOperator) {
+                reserveOperatorUnary = unaryOperator;
+            }
+    
+            switch(operator.id) {
+                case 'x-pow-2':
+                    unaryOperator = `${x}^2`;
+                    break;
+                case 'sin':
+                    unaryOperator = `sin(${x})`;
+                    break;
+                case 'cos':
+                    unaryOperator = `cos(${x})`;
+                    break;
+                case 'tg':
+                    unaryOperator = `tg(${x})`;
+                    break;
+                case 'ctg':
+                    unaryOperator = `ctg(${x})`;
+                    break;
+                case 'sqrt':
+                    unaryOperator = `sqrt(${x})`;
+                    break;
+                case 'factorial':
+                    unaryOperator = `${x}!`;
+                    break;
+                case 'natural-logarithm':
+                    unaryOperator = `ln(${x})`;
+                    break;
+            }
+            
+            if(reserveOperatorUnary) {
+                displayText.textContent = displayText.textContent.slice(0,displayText.textContent.indexOf(reserveOperatorUnary, 0));
+                reserveOperatorUnary = '';
+            } else {
+                console.log(displayText.textContent === x);
+                displayText.textContent =  displayText.textContent.slice(0, displayText.textContent.search(x));
+    
+            }
+            displayText.textContent += unaryOperator;
+    
+            if(displayText.textContent[textLength - 1] === binaryOperator) {
+                binaryOperator = '';
+            }
+    
+            countUnaryFunc();
+        }    
     } 
 
     function countUnaryFunc() {
-        let operand;
+/*         let operand;
 
         if(!binaryOperator) {
             operand = +a;
         } else {
             operand = +b;
-        }
+        } */
 
         switch(unaryOperator) {
             case `sin(${x})`: 
-                c = Math.sin(operand  * (Math.PI / 180));
+                c = Math.sin(x  * (Math.PI / 180));
                 break;
             case `cos(${x})`: 
-                c = Math.cos(operand  * (Math.PI / 180));
+                c = Math.cos(x  * (Math.PI / 180));
                 break;
             case `tg(${x})`: 
-                c = Math.tan(operand  * (Math.PI / 180));
+                c = Math.tan(x  * (Math.PI / 180));
                 break;
             case `ctg(${x})`: 
-                c = 1 / (Math.tan(operand  * (Math.PI / 180)));
+                c = 1 / (Math.tan(x  * (Math.PI / 180)));
                 break;
             case `sqrt(${x})`: 
-                c = Math.sqrt(operand);
+                c = Math.sqrt(x);
                 break;
             case `${x}^2`: 
-                c = Math.pow(operand, 2); 
+                c = Math.pow(x, 2); 
                 break;
             case `${x}!`: 
                 c = getFactorial(); 
                 break;
             case `ln(${x})`: 
-                c = Math.log(operand); 
+                c = Math.log(x); 
                 break;
         }
         
@@ -262,11 +295,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function getFactorial() {
         let fact = 1;
-        for(let i = 1; i <= x; i++) {
-            fact *= i;
+
+        if(x % 2 !== 1 && x % 2 !== 0) {
+            fact = '';
+            alert('Для вычисления факториала введите целое число');
+            displayText.textContent = '';
+        } else if(x > 1000) {
+            fact = Infinity;
+        } else {
+            for(let i = 1; i <= x; i++) {
+                fact *= i;
+            }
         }
+
         return fact;
     }
+
+    btnAll.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if(displayText.textContent.includes('NaN')) {
+                refresh();
+            }
+        });
+    });
 
     btnNums.forEach(numBtn => {
         numBtn.addEventListener('click', (e) => {

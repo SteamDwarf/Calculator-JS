@@ -2,21 +2,27 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    const displayText = document.querySelector('.display-text'), 
-          btnNums = document.querySelectorAll('.num'),
-          btnConstNums = document.querySelectorAll('.const-num'),
-          btnDott = document.querySelector('#dott'),
-          btnAll = document.querySelectorAll('.btn'),
-          btnClear = document.querySelector('#clear'),
-          btnDelete = document.querySelector('#delete'),
-          btnBinaryActions = document.querySelectorAll('[data-action="binary-action"]'),
-          btnUnaryActions = document.querySelectorAll('[data-action="unary-action"]'),
-          btnEqual = document.querySelector('#equal'),
-          btnParenthesis = document.querySelector('.parenthesis'); 
+    const displayText = document.querySelector('.display-text'); 
+    const btnNums = document.querySelectorAll('.num');
+    const btnConstNums = document.querySelectorAll('.const-num');
+    const btnDott = document.querySelector('#dott');
+    const btnAll = document.querySelectorAll('.btn');
+    const btnClear = document.querySelector('#clear');
+    const btnDelete = document.querySelector('#delete');
+    const btnBinaryActions = document.querySelectorAll('[data-action="binary-action"]');
+    const btnUnaryActions = document.querySelectorAll('[data-action="unary-action"]');
+    const btnEqual = document.querySelector('#equal');
 
-    let a = '', b = '', c = 0, d = '', x = '', r ='',
-        binaryOperator = '', unaryOperator = '', 
-        reserveOperator = '', reserveOperator2 = '', reserveOperatorUnary = '';
+    const regAllSymbols = new RegExp(/[-+/*%^.)eπ]$/);
+    const regBinary = new RegExp(/[-/%*^+]$/);
+    const regHighBinary = new RegExp(/[/*%^]$/);
+    const regLowBinary = new RegExp(/[-+]$/);
+    const regForConst = new RegExp(/[\deπ).!]$/);
+    const regForSimpleNum = new RegExp(/[)πe]$/);
+
+    let a = '', b = '', c = 0, d = '', x = '', r ='';
+    let binaryOperator = '', unaryOperator = '';
+    let reserveOperator = '', reserveOperator2 = '', reserveOperatorUnary = '';
 
       function displayNum() {
         displayText.textContent = c;
@@ -32,28 +38,36 @@ document.addEventListener("DOMContentLoaded", () => {
      function deleteLastSymb() {
         let text = displayText.textContent;
         if(binaryOperator) {
-            displayText.textContent = text.slice(0, -1);
             if(text[text.length - 1 ] === binaryOperator) {
                 binaryOperator = '';
+                if(reserveOperator) {
+                    binaryOperator = reserveOperator;
+                    reserveOperator = '';
+                    b = a;
+                    a = d;
+                    d = '';
+                    if(reserveOperator2) {
+                        reserveOperator = reserveOperator2;
+                        reserveOperator2 = '';
+                        d = r;
+                    }
+                }
             } else {
                 b = b.slice(0, -1);
             }
         } else if(a){
-            a = a.slice(0, -1);
-            displayText.textContent = text.slice(0, -1);
+            a = a.slice(0, -1); 
         }
+        displayText.textContent = text.slice(0, -1);
         //console.log(`a: ${a}, b: ${b}, c: ${c}, d: ${d}, symb: ${binaryOperator}, reserveOperator: ${reserveOperator}`);
     }
 
     function setValue(e) {
         let num = e.target.innerText;
-        let regConst = new RegExp(/[\deπ)!]$/);
-        let regSimpleNum = new RegExp(/[)πe]$/);
 
         if(e.target.id === 'pi' || e.target.id === 'eiler') {
-            if(!regConst.test(displayText.textContent)) {
+            if(!regForConst.test(displayText.textContent)) {
                 displayText.textContent += num;
-
                 if(e.target.id === 'pi') {
                     num = Math.PI;
                 } else if(e.target.id === 'eiler') {
@@ -63,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 num = '';
             }
         } else {
-            if(!regSimpleNum.test(displayText.textContent)){
+            if(!regForSimpleNum.test(displayText.textContent)){
                 displayText.textContent += num;       
             } else {
                 num = '';
@@ -78,10 +92,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function setDott() {
-        let text = displayText.textContent,
-            reg = new RegExp(/[-/%.^+]$/);
+        let text = displayText.textContent;
 
-        if(!text.match(reg) && text !== '') {
+        if(!regAllSymbols.test(text) && text !== '') {
             if(binaryOperator && !b.includes('.')) {
                 b += '.'; 
                 displayText.textContent += '.';
@@ -97,15 +110,35 @@ document.addEventListener("DOMContentLoaded", () => {
             textLength = text.length,
             operatorSymb = operator.innerText;
 
-        if(displayText.textContent[textLength - 1] !== '.') {
-            if(displayText.textContent[textLength - 1] === binaryOperator) {
-                displayText.textContent = text.slice(0, -1);
-                binaryOperator = '';
-            }
-    
-            if(operator.id === 'x-pow-y') {
-                operatorSymb = '^';
-            }
+        if(operatorSymb === 'xy') {
+            operatorSymb = '^';
+        }
+
+        if(text[textLength - 1] !== '.') {
+            if(regBinary.test(text)) {
+                if(regLowBinary.test(a) && regLowBinary.test(operatorSymb)) {
+                    displayText.textContent = '';
+                    a = operatorSymb;
+                } else if(regLowBinary.test(a)){
+                    operatorSymb = '';
+                } else {
+                    displayText.textContent = text.slice(0, -1);
+                    binaryOperator = '';
+                }
+                /* if(textLength === 0 && regLowBinary.test(operatorSymb)) {
+                    a = operatorSymb;
+                } else if(regLowBinary.test(a) && regLowBinary.test(operatorSymb)) {
+                    displayText.textContent = '';
+                    a = operatorSymb;
+                } else if(regLowBinary.test(a)){
+                    operatorSymb = '';
+                } else {
+                    displayText.textContent = text.slice(0, -1);
+                    binaryOperator = '';
+                } */
+            } else if(textLength === 0 && regLowBinary.test(operatorSymb)) {
+                a = operatorSymb;
+            }            
     
             if(binaryOperator) {
                 if(operatorSymb === '^') {
@@ -118,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     b = '';
                     reserveOperator = binaryOperator;
                     binaryOperator = operatorSymb;
-                } else if(operatorSymb.match(/[*/%]/) && !binaryOperator.match(/[*/%]/)) {
+                } else if(regHighBinary.test(operatorSymb) && !regHighBinary.test(binaryOperator)) { //operatorSymb.match(/[*/%]/) && !binaryOperator.match(/[*/%]/)
                     d = a;
                     a = b;
                     b = '';
@@ -128,19 +161,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     countBinaryFunc();
                     binaryOperator = operatorSymb;
                 }
-            } else {
-                if(displayText.textContent.length === 0 && (operatorSymb === '+' || operatorSymb === '-')) {
-                    a += operatorSymb;
-                } else {
-                    if(displayText.textContent.length === 0) {
-                        a = 0;
-                        displayText.textContent += a;
-                    }
-                    binaryOperator = operatorSymb;
+            } else if(!regLowBinary.test(a)){
+                if(textLength === 0 && regHighBinary.test(operatorSymb)) {
+                    a = 0;
+                    displayText.textContent += a;
                 }
+                binaryOperator = operatorSymb;
             }
     
             displayText.textContent += operatorSymb;
+            unaryOperator = '';
+            reserveOperatorUnary = '';
         }  
     }
 
@@ -192,8 +223,8 @@ document.addEventListener("DOMContentLoaded", () => {
         let text = displayText.textContent,
             textLength = text.length;
 
-        if (displayText.textContent[textLength - 1] !== '.') {
-            if(a === '' && b === '') {
+        if (!regBinary.test(text) && text[textLength - 1] !== '.') {     //text[textLength - 1] !== '.' && text[textLength - 1] !== binaryOperator
+            if(textLength === 0) {                  //a === '' && b === ''
                 x = 0;
             } else if(b) {
                 x = b;
@@ -232,20 +263,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     break;
             }
             
-            if(reserveOperatorUnary) {
-                displayText.textContent = displayText.textContent.slice(0,displayText.textContent.indexOf(reserveOperatorUnary, 0));
+            if(binaryOperator) {
+                //displayText.textContent =  displayText.textContent.replace(x, unaryOperator);
+                let binIndex = displayText.textContent.indexOf(binaryOperator);
+                displayText.textContent =  displayText.textContent.slice(0, binIndex + 1);
+                displayText.textContent += unaryOperator;
+            } else if(reserveOperatorUnary) {
+                //displayText.textContent = displayText.textContent.slice(0,displayText.textContent.indexOf(reserveOperatorUnary, 0));
+                displayText.textContent =  displayText.textContent.replace(reserveOperatorUnary, unaryOperator);
                 reserveOperatorUnary = '';
             } else {
-                console.log(displayText.textContent === x);
-                displayText.textContent =  displayText.textContent.slice(0, displayText.textContent.search(x));
-    
+                displayText.textContent = ''; //displayText.textContent.replace(x, unaryOperator)
+                displayText.textContent += unaryOperator;
             }
-            displayText.textContent += unaryOperator;
-    
-            if(displayText.textContent[textLength - 1] === binaryOperator) {
-                binaryOperator = '';
-            }
-    
             countUnaryFunc();
         }    
     } 
@@ -296,10 +326,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function getFactorial() {
         let fact = 1;
 
-        if(x % 2 !== 1 && x % 2 !== 0) {
+        if((x % 2 !== 1 && x % 2 !== 0) || x <= 0) {
             fact = '';
-            alert('Для вычисления факториала введите целое число');
-            displayText.textContent = '';
+            alert('Для вычисления факториала введите натуральное число');
+            refresh();
         } else if(x > 1000) {
             fact = Infinity;
         } else {

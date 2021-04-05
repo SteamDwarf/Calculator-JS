@@ -38,28 +38,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
      function deleteLastSymb() {
         let text = displayText.textContent;
-        if(binaryOperator) {
-            if(text[text.length - 1 ] === binaryOperator) {
-                binaryOperator = '';
-                if(reserveOperator) {
-                    binaryOperator = reserveOperator;
-                    reserveOperator = '';
-                    b = a;
-                    a = d;
-                    d = '';
-                    if(reserveOperator2) {
-                        reserveOperator = reserveOperator2;
-                        reserveOperator2 = '';
-                        d = r;
+        if(!text.match(/[!)]$/) && !unaryOperator.includes('^')) {
+            if(binaryOperator) {
+                if(text[text.length - 1 ] === binaryOperator) {
+                    binaryOperator = '';
+                    if(reserveOperator) {
+                        binaryOperator = reserveOperator;
+                        reserveOperator = '';
+                        b = a;
+                        a = d;
+                        d = '';
+                        if(reserveOperator2) {
+                            reserveOperator = reserveOperator2;
+                            reserveOperator2 = '';
+                            d = r;
+                        }
                     }
+                } else {
+                    b = b.slice(0, -1);
                 }
-            } else {
-                b = b.slice(0, -1);
+            } else if(a){
+                a = a.slice(0, -1); 
             }
-        } else if(a){
-            a = a.slice(0, -1); 
+            displayText.textContent = text.slice(0, -1);
         }
-        displayText.textContent = text.slice(0, -1);
     }
 
     function setValue(e) {

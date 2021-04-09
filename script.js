@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnEqual = document.querySelector('#equal');
 
     const regAllSymbols = new RegExp(/[-+/*%^.)eπ]$/);
-    const regBinary = new RegExp(/[-/%*^+]$/);
+    const regBinary = new RegExp(/[-/%*^+.]$/);
     const regHighBinary = new RegExp(/[/*%^]$/);
     const regLowBinary = new RegExp(/[-+]$/);
     const regForConst = new RegExp(/[\deπ).!]$/);
@@ -36,61 +36,65 @@ document.addEventListener("DOMContentLoaded", () => {
         reserveOperator = ''; reserveOperator2 = ''; reserveOperatorUnary = '';
     }
 
-     function deleteLastSymb() {
+    function deleteLastSymb() {
         let text = displayText.textContent;
-        if(!text.match(/[!)]$/) && !unaryOperator.includes('^')) {
-            if(binaryOperator) {
-                if(text[text.length - 1 ] === binaryOperator) {
-                    binaryOperator = '';
-                    if(reserveOperator) {
-                        binaryOperator = reserveOperator;
-                        reserveOperator = '';
-                        b = a;
-                        a = d;
-                        d = '';
-                        if(reserveOperator2) {
-                            reserveOperator = reserveOperator2;
-                            reserveOperator2 = '';
-                            d = r;
-                        }
-                    }
-                } else {
-                    b = b.slice(0, -1);
-                }
-            } else if(a){
-                a = a.slice(0, -1); 
-            }
-            displayText.textContent = text.slice(0, -1);
+
+        if(text.match(/[!)]$/)) {
+            return;
         }
+        if(binaryOperator) {
+            if(text[text.length - 1 ] === binaryOperator) {
+                binaryOperator = '';
+
+                if(reserveOperator) {
+                    binaryOperator = reserveOperator;
+                    reserveOperator = '';
+                    b = a;
+                    a = d;
+                    d = '';
+                }
+                if(reserveOperator2) {
+                    reserveOperator = reserveOperator2;
+                    reserveOperator2 = '';
+                    d = r;
+                }
+
+                displayText.textContent = text.slice(0, -1);
+                return;
+            }
+            b = b.slice(0, -1);
+            displayText.textContent = text.slice(0, -1);
+            return;
+        }
+            a = a.slice(0, -1);
+            displayText.textContent = text.slice(0, -1); 
     }
 
     function setValue(e) {
         let num = e.target.innerText;
 
+        if(regForSimpleNum.test(displayText.textContent)) {
+            return;
+        }
         if(e.target.id === 'pi' || e.target.id === 'eiler') {
-            if(!regForConst.test(displayText.textContent)) {
-                displayText.textContent += num;
-                if(e.target.id === 'pi') {
-                    num = Math.PI;
-                } else if(e.target.id === 'eiler') {
-                    num = Math.E;
-                }
-            } else {
-                num = '';
+            if(regForConst.test(displayText.textContent)) {
+                return;
             }
-        } else {
-            if(!regForSimpleNum.test(displayText.textContent)){
-                displayText.textContent += num;       
-            } else {
-                num = '';
-            }      
-        } 
+            
+            if(e.target.id === 'pi') {
+                num = Math.PI;
+            }
+            if(e.target.id === 'eiler') {
+                num = Math.E;
+            }
+        }
 
+        displayText.textContent += num;
         if(binaryOperator && displayText.textContent.length > 1) {
             b += num; 
-        } else {
-            a += num;
+            return;
         }
+            a += num;
     }
 
     function setDott() {
@@ -214,59 +218,64 @@ document.addEventListener("DOMContentLoaded", () => {
         let text = displayText.textContent;
         let textLength = text.length;
 
-        if (!regBinary.test(text) && text[textLength - 1] !== '.') {
-            if(textLength === 0) {
-                x = 0;
-            } else if(b) {
-                x = b;
-            } else {
-                x = a;
-            }
-        
-            if(unaryOperator) {
-                reserveOperatorUnary = unaryOperator;
-            }
-    
-            switch(operator.id) {
-                case 'x-pow-2':
-                    unaryOperator = `${x}^2`;
+        if(regBinary.test(text)) {
+            return;
+        }
+        if(textLength === 0) {
+            x = 0;
+        } else if(b) {
+            x = b;
+        } else {
+            x = a;
+        }
+        if(unaryOperator) {
+            reserveOperatorUnary = unaryOperator;
+        }
+
+        switch(operator.id) {
+            case 'unary-sub':
+                if(unaryOperator[0] === '-') {
+                    x = Number(x.toString().substring(1));
+                    unaryOperator = `${x}`;
                     break;
-                case 'sin':
-                    unaryOperator = `sin(${x})`;
+                }
+                    unaryOperator = `-${x}`;
                     break;
-                case 'cos':
-                    unaryOperator = `cos(${x})`;
-                    break;
-                case 'tg':
-                    unaryOperator = `tg(${x})`;
-                    break;
-                case 'ctg':
-                    unaryOperator = `ctg(${x})`;
-                    break;
-                case 'sqrt':
-                    unaryOperator = `sqrt(${x})`;
-                    break;
-                case 'factorial':
-                    unaryOperator = `${x}!`;
-                    break;
-                case 'natural-logarithm':
-                    unaryOperator = `ln(${x})`;
-                    break;
-            }
-            
-            if(binaryOperator) {
-                let binIndex = displayText.textContent.indexOf(binaryOperator);
-                displayText.textContent =  displayText.textContent.slice(0, binIndex + 1);
-                displayText.textContent += unaryOperator;
-            } else if(reserveOperatorUnary) {
-                displayText.textContent =  displayText.textContent.replace(reserveOperatorUnary, unaryOperator);
-                reserveOperatorUnary = '';
-            } else {
-                displayText.textContent = '';
-                displayText.textContent += unaryOperator;
-            }
-            countUnaryFunc();
-        }    
+            case 'sin':
+                unaryOperator = `sin(${x})`;
+                break;
+            case 'cos':
+                unaryOperator = `cos(${x})`;
+                break;
+            case 'tg':
+                unaryOperator = `tg(${x})`;
+                break;
+            case 'ctg':
+                unaryOperator = `ctg(${x})`;
+                break;
+            case 'sqrt':
+                unaryOperator = `sqrt(${x})`;
+                break;
+            case 'factorial':
+                unaryOperator = `${x}!`;
+                break;
+            case 'natural-logarithm':
+                unaryOperator = `ln(${x})`;
+                break;
+        }
+
+        if(binaryOperator) {
+            let binIndex = displayText.textContent.indexOf(binaryOperator);
+            displayText.textContent =  displayText.textContent.slice(0, binIndex + 1);
+            displayText.textContent += unaryOperator;
+        } else if(reserveOperatorUnary) {
+            displayText.textContent =  displayText.textContent.replace(reserveOperatorUnary, unaryOperator);
+            reserveOperatorUnary = '';
+        } else {
+            displayText.textContent = '';
+            displayText.textContent += unaryOperator;
+        }
+        countUnaryFunc();
     } 
 
     function countUnaryFunc() {
@@ -287,8 +296,11 @@ document.addEventListener("DOMContentLoaded", () => {
             case `sqrt(${x})`: 
                 c = Math.sqrt(x);
                 break;
-            case `${x}^2`: 
-                c = Math.pow(x, 2); 
+            case `-${x}`: 
+                c = -x; 
+                break;
+            case `${x}`: 
+                c = x; 
                 break;
             case `${x}!`: 
                 c = getFactorial(); 

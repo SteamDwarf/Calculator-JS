@@ -80,16 +80,17 @@ document.addEventListener("DOMContentLoaded", () => {
             if(regForConst.test(displayText.textContent)) {
                 return;
             }
-            
+            displayText.textContent += num;
             if(e.target.id === 'pi') {
                 num = Math.PI;
             }
             if(e.target.id === 'eiler') {
                 num = Math.E;
             }
+        } else {
+            displayText.textContent += num;
         }
 
-        displayText.textContent += num;
         if(binaryOperator && displayText.textContent.length > 1) {
             b += num; 
             return;
